@@ -9,4 +9,4 @@ How to run:
 4. Grab all the processed photos from the output folder
 
 
-Expect about 100 to take a little over a minute to run.
+Expect about 100 photos to take a little over a minute to run.
