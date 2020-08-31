@@ -17,7 +17,7 @@ import (
 
 /*
 	Resizes photo to width iPhone 11 Pro 2436 pixels width and scales the rest of the photo proportionally. 
-	This has been adapted to test Go and also to use with AWS Lambda.
+	This is version that can be run on AWS Lambda.
 */
 func main() {
 	lambda.Start(HandleRequest)
