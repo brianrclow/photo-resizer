@@ -4,12 +4,6 @@ photo-resizer is an application written in Go for converting large jpg images of
 
 This project allows for the application to run locally or on AWS Lambda using Amazon S3 for storage of the images. This has been adapted from: https://github.com/nfnt/resize to allow for scalable adornment of photos.
 
-
-## Installation
-```bash
-$ git clone github.com/brianrclow/photo-resizer
-```
-
 ## Usage
 
 ### Local
