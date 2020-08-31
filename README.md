@@ -24,4 +24,4 @@ How to run:
 
 ## License
 
-MIT
+[MIT](LICENSE)
