@@ -6,13 +6,11 @@ This project allows for the application to run locally or on AWS Lambda using Am
 
 
 ## Installation
----------------
 ```bash
-$ git clone github.com/briarclow/photo-resizer
+$ git clone github.com/brianrclow/photo-resizer
 ```
 
 ## Usage
---------
 
 ### Local
 How to run:
@@ -28,6 +26,5 @@ How to run:
 
 
 ## License
-----------
 
 [MIT](LICENSE)
