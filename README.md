@@ -6,11 +6,15 @@ This project allows for the application to run locally or on AWS Lambda using Am
 
 
 ## Installation
+---------------
+```bash
+$ git clone github.com/briarclow/photo-resizer
+```
 
 ## Usage
+--------
 
 ### Local
-src/local/
 How to run:
 
 1. Drop all photos that need to be resized into the input folder
@@ -20,9 +24,10 @@ How to run:
 
 
 ### AWS Lambda
-src/aws/
+
 
 
 ## License
+----------
 
 [MIT](LICENSE)
