@@ -10,7 +10,7 @@ import (
 )
 
 /*
-	Resizes photo to width iPhone 11 Pro 2436 pixels width and scales the rest of the photo proportionally. 
+	Resizes jpg image to iPhone 11 Pro width of 2436 pixels and scales the rest of the image proportionally.
 	This is version that can run locally.
 */
 func main() {
@@ -20,6 +20,7 @@ func main() {
 		fmt.Println("error reading directory")
 		log.Fatal(err)
 	}
+	fmt.Println("Pulling images from input directory to be resized...")
 	// resizes all photos in the path
 	for _, f := range photos {
 
@@ -50,6 +51,7 @@ func main() {
 
 		// write new image to file
 		jpeg.Encode(out, m, nil)
-		fmt.Println(f.Name() + " Done!")
+		fmt.Println(f.Name() + " resized")
 	}
+	fmt.Println("Go to the output directory to see resized images!")
 }

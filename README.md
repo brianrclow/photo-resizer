@@ -9,11 +9,11 @@ This project allows for the application to run locally or on AWS Lambda using Am
 ### Local
 How to run:
 
-1. Drop all photos that need to be resized into the input folder
-2. Make sure that the filepath is correct in the program for input and output
-3. Run "go run main.go"
-4. View the processed photos from the output folder
-
+1. Navigate to src/local/
+2. Create 2 directories named "input" and "output"
+3. Add jpg images you want to resize to "input" directory
+4. Run "go run main.go"
+4. View the resized images in src/local/output/
 
 ### AWS Lambda
 
