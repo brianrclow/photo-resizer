@@ -16,7 +16,9 @@ How to run:
 4. View the resized images in src/local/output/
 
 ### AWS Lambda
+How to run:
 
+This is being worked on now...
 
 
 ## License
