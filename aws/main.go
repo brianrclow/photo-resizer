@@ -10,6 +10,9 @@ import (
 	"context"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/aws"
+    "github.com/aws/aws-sdk-go/service/s3"
+    "github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
 /*
@@ -28,22 +31,31 @@ func exitErrorf(msg string, args ...interface{}) {
 func HandleRequest(ctx context.Context) (error) {
 	var bucket = os.Getenv("imageBucket")
 	fmt.Println(bucket)
+	var item = os.Getenv("imageInputDirectory")
 
 
-	sess, err := session.NewSession(&aws.Config{
+	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2")},
 	)
 	
-	// Create S3 service client
-	svc := s3.New(sess)
+	downloader := s3manager.NewDownloader(sess)
+
+	photos, err := downloader.Download(file,
+		&s3.GetObjectInput{
+			Bucket: aws.String(bucket),
+			Key:    aws.String(item),
+		})
+	if err != nil {
+		exitErrorf("Unable to download item %q, %v", item, err)
+	}
 
 
 	// reads the directory given below
-	photos, err := ioutil.ReadDir("input/")
-	if err != nil {
-		fmt.Println("error reading directory")
-		log.Fatal(err)
-	}
+//		photos, err := ioutil.ReadDir("input/")
+//	if err != nil {
+//		fmt.Println("error reading directory")
+//		log.Fatal(err)
+//	}
 	// resizes all photos in the path
 	for _, f := range photos {
 
