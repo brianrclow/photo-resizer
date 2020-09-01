@@ -18,9 +18,23 @@ How to run:
 4. View the resized images in src/local/output/
 
 ### AWS Lambda
-How to run:
 
-This is being worked on now...
+Prerequisities:
+* Install the AWS Go SDK along with AWS Lambda Go.
+* Create a Lambda Function with a trigger to a specific bucket/directory.
+* Add 3 environment variables to your lambda function
+    * imageDestinationPath - the path you want the resized image to be saved to.
+    * imageName - full name of the image including its suffix (.jpg)
+    * imageSrcPath - the source bucket/directory of the image.
+* Set your Lambda Handler to "main"
+* Setup a Role that has access to lambda, cloudwatchlogs and S3
+
+How to run:
+1. Navigate to the src/aws/
+2. Run "GOOS=linux go build main.go" to ensure the go executable is compatible with the go runtime.
+3. Run "zip function.zip main" to create the zip file with the go executable
+4. Upload function.zip to AWS Lambda
+
 
 
 ## License
