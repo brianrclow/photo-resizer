@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/nfnt/resize"
 	"image/jpeg"
-	"io/ioutil"
 	"log"
 	"os"
-	"context"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-sdk-go/aws/session"
+
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
     "github.com/aws/aws-sdk-go/service/s3"
     "github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
@@ -23,61 +22,73 @@ func main() {
 	lambda.Start(HandleRequest)
 }
 
+// for error logging
 func exitErrorf(msg string, args ...interface{}) {
     fmt.Fprintf(os.Stderr, msg+"\n", args...)
     os.Exit(1)
 }
 
-func HandleRequest(ctx context.Context) (error) {
-	var bucket = os.Getenv("imageBucket")
-	fmt.Println(bucket)
-	var item = os.Getenv("imageInputDirectory")
+func HandleRequest() {
 
+// download from S3 input directory
+	var imageSrcPath = os.Getenv("imageSrcPath")
+	// fmt.Println("imageSrcPath: " + imageSrcPath)
+	var originalImage = os.Getenv("imageName")
+	// fmt.Println("imageName: " + originalImage)
+	var imageDestinationPath = os.Getenv("imageDestinationPath")
+	// fmt.Println("imageDestinationPath: " + imageDestinationPath)
 
-	sess, _ := session.NewSession(&aws.Config{
+	// create the image to be downloaded
+	unprocessedImage, err := os.Create("/tmp/"+originalImage)
+    if err != nil {
+        exitErrorf("Unable to open file %q, %v", originalImage, err)
+	}
+	
+	// initializes session in us-west-2 with credentials
+	sessDn, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2")},
 	)
+	// creates new downloader object
+	downloader := s3manager.NewDownloader(sessDn)
 	
-	downloader := s3manager.NewDownloader(sess)
 
-	photos, err := downloader.Download(file,
-		&s3.GetObjectInput{
-			Bucket: aws.String(bucket),
-			Key:    aws.String(item),
+	// downloads the unprocessed image from the imageSrcPath
+	numBytes, err := downloader.Download(unprocessedImage, &s3.GetObjectInput{
+			Bucket: aws.String(imageSrcPath),
+			Key:    aws.String(originalImage),
 		})
 	if err != nil {
-		exitErrorf("Unable to download item %q, %v", item, err)
+		exitErrorf("Unable to download originalImage %q, %v", originalImage, err)
 	}
+	fmt.Println("Downloaded", unprocessedImage.Name(), numBytes, "bytes")
+	fmt.Println("Download Success!")
 
 
-	// reads the directory given below
-//		photos, err := ioutil.ReadDir("input/")
-//	if err != nil {
-//		fmt.Println("error reading directory")
-//		log.Fatal(err)
-//	}
-	// resizes all photos in the path
-	for _, f := range photos {
+// resize in lambda
 
-		// open photo
-		file, err := os.Open("input/"+f.Name())
+	fmt.Println("Starting resize...")
+
+
+		// open image
+		openedImage, err := os.Open(unprocessedImage.Name())
 		if err != nil {
 			fmt.Println("error opening photo and saving it as a file")
 			log.Fatal(err)
 		}
 
 		// decode jpeg into image.Image
-		img, err := jpeg.Decode(file)
+		decodedImage, err := jpeg.Decode(openedImage)
 		if err != nil {
 			fmt.Println("error decoding jpeg")
 			log.Fatal(err)
 		}
-		file.Close()
+		openedImage.Close()
 
 		// resize to width 2436 using Lanczos resampling and preserve aspect ratio
-		m := resize.Resize(2436, 0, img, resize.Lanczos3)
+		resizedImage := resize.Resize(2436, 0, decodedImage, resize.Lanczos3)
 
-		out, err := os.Create("output/"+f.Name())
+		// create output file for image using original name
+		out, err := os.Create(unprocessedImage.Name())
 		if err != nil {
 			fmt.Println("error creating outputfile")
 			log.Fatal(err)
@@ -85,8 +96,45 @@ func HandleRequest(ctx context.Context) (error) {
 		defer out.Close()
 
 		// write new image to file
-		jpeg.Encode(out, m, nil)
-		fmt.Println(f.Name() + " Done!")
-	}
-	return nil
+		jpeg.Encode(out, resizedImage, nil)
+		fmt.Println(unprocessedImage.Name() + " resized")
+		fmt.Println("Resize Success!")
+
+
+// upload to S3 output directory
+	fmt.Println("Starting upload to S3...")
+
+
+	processedImage, err := os.Open(unprocessedImage.Name())
+    if err != nil {
+        exitErrorf("Unable to open file %q, %v", err)
+    }
+
+    defer processedImage.Close()
+
+    sessUp, err := session.NewSession(&aws.Config{
+        Region: aws.String("us-west-2")},
+    )
+
+    uploader := s3manager.NewUploader(sessUp)
+
+    // Upload the file's body to S3 bucket as an object with the key being the
+    // same as the filename.
+    _, err = uploader.Upload(&s3manager.UploadInput{
+        Bucket: aws.String(imageDestinationPath),
+        Key: aws.String(originalImage),
+        Body: processedImage,
+    })
+    if err != nil {
+        // Print the error and exit.
+        exitErrorf("Unable to upload %q to %q, %v", originalImage, imageDestinationPath, err)
+    }
+
+    fmt.Printf("Successfully uploaded %q to %q\n", originalImage, imageDestinationPath)
+
+
+// after upload clean out tmp folder
+	// delete anything in tmp folder
+	
+
 }
