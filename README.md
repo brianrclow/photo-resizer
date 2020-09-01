@@ -6,6 +6,14 @@ This project allows for the application to run locally or on AWS Lambda using Am
 
 Test images provided free from unsplash.com
 
+Currently
+* Local implementation allows for resizing of mulitple images in a folder
+* AWS implementation only allows for resizing a single image
+
+
+In the future I would like to improve this by adding support for multiple images on AWS and checking edge cases to make this a robust application.
+
+
 ## Usage
 
 ### Local
