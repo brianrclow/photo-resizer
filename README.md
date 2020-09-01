@@ -36,6 +36,17 @@ How to run:
 4. Upload function.zip to AWS Lambda
 
 
+## File Structure
+```
+images
+ └─── test images
+src
+ ├── aws
+ │     └─── main.go (AWS implementation)
+ └── local
+       └─── main.go (local implementation)
+```
+
 
 ## License
 
