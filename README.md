@@ -13,7 +13,7 @@ Current
 
 ## Youtube Video
 
-I talk about AWS Amplify and Cognito in this video as well as demo the app as a completely new user. You can view the video:
+I talk about what DevOps is and how you can use AWS as a tool for DevOps. I walk through creating and provisioning an IAM user as well as connecting that user to a CodeCommit repo. You can view the video:
 https://youtu.be/WlnMekNAZaw
 
 ## Usage
